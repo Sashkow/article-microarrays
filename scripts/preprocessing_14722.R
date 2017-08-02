@@ -1,16 +1,16 @@
 # Load HuGene and hgu133 BrainArray packages
 source("https://bioconductor.org/biocLite.R")
 
-biocLite('affycoretools')
+
 library(affycoretools)
 
 # library(hugene10sthsentrezgprobe)
 # library(hugene10sthsentrezgcdf)
 # library(hugene10sthsentrezg.db)
-#
-# library(hgu133plus2hsentrezgprobe)
-# library(hgu133plus2hsentrezgcdf)
-# library(hgu133plus2hsentrezg.db)
+biocLite('affycoretools')
+biocLite('hgu133bhsentrezgprobe')
+library(hgu133bhsentrezgcdf)
+library(hgu133bhsentrezg.db)
 # Other packages
 library(affy)
 library(sva)
@@ -40,6 +40,7 @@ for (array in levels(studies$platformAbbr)){
   install.brainarray(array)
 }
 
+install.brainarray(studies[1,]$platformAbbr)
 
 
 i = 1
@@ -50,7 +51,7 @@ if (! dir.exists(current_path)){
 }
 
 
-aeData = getAE("E-GEOD-14722", type = 'raw')
+
 
 aeData = getAE(
   studies$accession[[i]],
@@ -81,42 +82,69 @@ rownames(pd) = pd$Array.Data.File
 
 rownames(pd)
 
+write.table(t(pdataHgu133b$Array.Data.File), "partA.txt", sep=" ", row.names=FALSE,
+            col.names=FALSE, quote=FALSE)
+
+
 
 affyDatahgu133a = ReadAffy(phenoData=pd,
                     sampleNames=pdataHgu133a$Sample.Name,
                     filenames=pdataHgu133a$Array.Data.File,
                     celfile.path="raws/affymetrix/E-GEOD-14722/A")
 
+
 rownames(affyDatahgu133a)
+
+
 
 affyDatahgu133b = ReadAffy(phenoData=pd,
                            sampleNames=pdataHgu133b$Sample.Name,
                            filenames=pdataHgu133b$Array.Data.File,
                            celfile.path="raws/affymetrix/E-GEOD-14722/B")
 
+
+affyDatahgu133a@cdfName <- "hgu133ahsentrezgcdf"
 affyDatahgu133a.rma = rma(affyDatahgu133a)
+affyDatahgu133b@cdfName <- "hgu133bhsentrezgcdf"
 affyDatahgu133b.rma = rma(affyDatahgu133b)
 
 
 affyDatahgu133a.rma.exprs = exprs(affyDatahgu133a.rma)
 affyDatahgu133b.rma.exprs = exprs(affyDatahgu133b.rma)
 
+write.table(affyDatahgu133b.rma.exprs, paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrixB.tsv", sep=""), sep="\t", quote=FALSE)
+
+affyDatahgu133a.rma.exprs = read.table(paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrixA.tsv", sep=""), sep="\t")
+length(rownames(affyDatahgu133a.rma.exprs))
+length(rownames(affyDatahgu133b.rma.exprs))
+
+
+
 ab = intersect(rownames(affyDatahgu133a.rma.exprs), rownames(affyDatahgu133b.rma.exprs))
+ab
+
 length(ab)
 
-class(affyDatahgu133a.rma.exprs)
+
 
 a.remove = affyDatahgu133a.rma.exprs[!rownames(affyDatahgu133a.rma.exprs) %in% ab, ]
-length(a.remove)
+nrow(a.remove)
 
+intersect(rownames(a.remove), rownames(affyDatahgu133b.rma.exprs))
+
+colnames(a.remove) = colnames(affyDatahgu133b.rma.exprs)
 aandb = rbind(a.remove, affyDatahgu133b.rma.exprs)
+nrow(aandb)
+
+write.table(aandb, paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t", quote=FALSE)
+
+
 
 difference =rowMeans(affyDatahgu133a.rma.exprs[ab,])-rowMeans(affyDatahgu133b.rma.exprs[ab,])
 difference[ordered()]
 
 
-write.table(t(pdataHgu133b$Array.Data.File), "partA.txt", sep=" ", row.names=FALSE,
-            col.names=FALSE, quote=FALSE)
+
 
 write.table(aandb, paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t", quote=FALSE)
 paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep="")

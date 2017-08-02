@@ -40,13 +40,13 @@ for (array in levels(studies$platformAbbr)){
   install.brainarray(array)
 }
 
-i = 4
+# i = 6 E-GEOD-36083
+i = 6
 
 current_path = paste(rawspath, '/', studies$accession[[i]], sep='')
 if (! dir.exists(current_path)){
   dir.create(current_path)
 }
-
 
 aeData = getAE(
   studies$accession[[i]],
@@ -55,20 +55,18 @@ aeData = getAE(
   # local = TRUE,
   type = 'raw')
 
-
-
 z <- ArrayExpress:::readPhenoData(aeData$sdrf, aeData$path)
+
 
 
 # merge ArrayExpress phenodata with IGEA phenodata
 pd = merge(z@data, igea, all.x = TRUE, by.x = 'Source.Name', by.y = 'Sample.Name')
 
+
+
 rownames(pd) = pd$Array.Data.File
 
-nrow(pd)
-
-
-pd$Experiment
+rownames(pd)
 
 
 affyData = ReadAffy(phenoData=pd,
@@ -81,7 +79,7 @@ affyData = ReadAffy(phenoData=pd,
 
 
 affyData@cdfName <- paste(studies$platformAbbr[[i]], 'hsentrezgcdf', sep="")
-nrow(affyData)
+nrow(exprs(affyData))
 
 affyData.rma = rma(affyData)
 nrow(exprs(affyData.rma))

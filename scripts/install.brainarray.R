@@ -101,6 +101,6 @@ install.brainarray <- function(array,
 }
 
 
-#install.brainarray("hgu133plus2")
+install.brainarray("hgu133b")
 
 
