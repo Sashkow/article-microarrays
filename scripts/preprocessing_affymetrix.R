@@ -1,7 +1,7 @@
 # Load HuGene and hgu133 BrainArray packages
 source("https://bioconductor.org/biocLite.R")
-
-
+biocLite('org.Hs.eg.db')
+library(org.Hs.eg.db)
 library(affycoretools)
 
 # library(hugene10sthsentrezgprobe)
@@ -39,9 +39,14 @@ igea = read.table('igea_tsv/samples.tsv',header = TRUE, sep = '\t', fill = TRUE)
 for (array in levels(studies$platformAbbr)){
   install.brainarray(array)
 }
+i = 4
+install.brainarray(studies$platformAbbr[[i]])
+install.brainarray('hugene10st')
+
+
 
 # i = 6 E-GEOD-36083
-i = 6
+
 
 current_path = paste(rawspath, '/', studies$accession[[i]], sep='')
 if (! dir.exists(current_path)){
