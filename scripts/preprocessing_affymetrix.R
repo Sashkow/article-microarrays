@@ -32,6 +32,7 @@ plotsqcpath = paste(getwd(), 'plots/qc/', sep='/')
 
 # Load studies description
 studies <- read.table("general/affymetrix_placenta_studies.tsv", header = TRUE, sep = "\t")
+studies$platformAbbr..processingSoft
 
 # load IGEA phenodata
 igea = read.table('igea_tsv/samples.tsv',header = TRUE, sep = '\t', fill = TRUE)
@@ -40,9 +41,12 @@ igea = read.table('igea_tsv/samples.tsv',header = TRUE, sep = '\t', fill = TRUE)
 for (array in levels(studies$platformAbbr)){
   install.brainarray(array)
 }
-i = 4
+
+i = 7
 source('~/r/article-microarrays/scripts/install.brainarray.R')
 install.brainarray(studies$platformAbbr[[i]])
+
+studies$platformAbbr
 
 
 
@@ -63,7 +67,7 @@ aeData = getAE(
 
 z <- ArrayExpress:::readPhenoData(aeData$sdrf, aeData$path)
 
-
+z@data$Extract.Name
 
 # merge ArrayExpress phenodata with IGEA phenodata
 pd = merge(z@data, igea, all.x = TRUE, by.x = 'Source.Name', by.y = 'Sample.Name')
@@ -71,6 +75,8 @@ pd = merge(z@data, igea, all.x = TRUE, by.x = 'Source.Name', by.y = 'Sample.Name
 
 
 rownames(pd) = pd$Array.Data.File
+
+pd$Experiment
 
 rownames(pd)
 
@@ -94,7 +100,6 @@ nrow(exprs(affyData.rma))
 # Save affy and brain expression sets
 write.table(exprs(affyData.rma), paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t", quote=FALSE)
 t = read.table(paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t")
-
 
 
 
