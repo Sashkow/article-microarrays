@@ -12,12 +12,13 @@ library(affycoretools)
 # library(hgu133plus2hsentrezgcdf)
 # library(hgu133plus2hsentrezg.db)
 # Other packages
-library(affy)
 library(sva)
 library(stringr)
 library(ggplot2)
 library(ggfortify)
 library(cowplot)
+
+library(affy)
 library(ArrayExpress)
 
 setwd('/home/rstudio/r/article-microarrays')
@@ -40,8 +41,8 @@ for (array in levels(studies$platformAbbr)){
   install.brainarray(array)
 }
 i = 4
+source('~/r/article-microarrays/scripts/install.brainarray.R')
 install.brainarray(studies$platformAbbr[[i]])
-install.brainarray('hugene10st')
 
 
 
@@ -93,7 +94,11 @@ nrow(exprs(affyData.rma))
 # Save affy and brain expression sets
 write.table(exprs(affyData.rma), paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t", quote=FALSE)
 t = read.table(paste(prepath, '/', studies$accession[[i]], "_preprocessed_affymetrix.tsv", sep=""), sep="\t")
-t
+
+
+
+
+
 
 
 # QC
