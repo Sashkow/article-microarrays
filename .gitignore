@@ -3,9 +3,6 @@ raws/*
 !raws/047_20150203_Tchou_CAFs.zip
 
 
-general/*
-!general/studies.tsv
-!general/studies_idat.tsv
 RNA-seq/*
 !RNA-seq/SamplesRNASeq.txt
 !RNA-seq/run.sh
